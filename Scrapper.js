@@ -13,8 +13,7 @@ class Scrapper {
       ]
           this.questionsSelectors =[
             'ol[class="wpProQuiz_list"] > li',
-            "div.entry-content > ol > li",
-            "#post-1411 > div.entry-content > p:nth-child(1) > strong:nth-child(2)"
+            "div.entry-content > ol > li", 
 
           ]
           this.choicesSelectors =[
@@ -50,8 +49,14 @@ class Scrapper {
                 var titleEl =  this.getElement($,this.titleSelectors, questionEl)
                 if(titleEl)
             var title = titleEl.text()
+            try {
+                var title = titleEl.text().split("Explanation:")[0]
             } catch (error) {
                 console.log(error)
+            }
+            } catch (error) {
+                console.log(error)
+
             }
 
             question.title = this.prettifyString(title)
@@ -91,9 +96,16 @@ class Scrapper {
             var cleanChoice = ""
             try {
                 cleanChoice = this.prettifyString($(choiceEl).text())
-                var expl = $('div[class="itemfeedback"]', choiceEl).text()
+                try {
+                    cleanChoice = this.prettifyString($(choiceEl).text()).split("Explanation:")[0]
+                    console.log("hi yaaaa")
+
+                    var expl = $('div[class="itemfeedback"]', choiceEl).text()|| this.prettifyString($(choiceEl).text()).split("explanation")[1]
+                } catch (error) {
+                    console.log("hi yaaaa",error)
+                } 
                 if (expl)
-                    solution.explanation = this.prettifyString()
+                    solution.explanation = this.prettifyString(expl)
 
             } catch (error) {
                 console.log("Error cleaning answer...", error)

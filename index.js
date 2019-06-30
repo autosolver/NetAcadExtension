@@ -21,15 +21,15 @@ app.get("/pop/:url", (req, res) => {
 })
 
 app.get("/q/:q", (req, res) => {
-    const query = new RegExp(req.params.q, 'i')
 
-    smartFindOne(query, true)
+    smartFindOne( req, res)
 
 })
 
-function smartFindOne(query) {
-     
+function smartFindOne(req, res) {
 
+
+    var query = req.params.q
     var cleanQ = "________"
     try {
         cleanQ = query.split("?")[0]
@@ -43,7 +43,7 @@ function smartFindOne(query) {
 
 
 
-        res.status(200)
+
 
         if (!question) {
             try {
@@ -51,14 +51,15 @@ function smartFindOne(query) {
             } catch (error) {
 
             }
-          return  questionModel.findOne({ title: cleanQ }, (err, question) => {
-                return question
+            return questionModel.findOne({ title: cleanQ }, (err, question) => {
+                res.status(200)
+                return res.json(question)
             })
 
- 
-        }else{
 
-        return question
+        } else {
+            res.status(200)
+            return res.json(question)
         }
 
 
@@ -80,10 +81,20 @@ app.get("/all", (req, res) => {
 
 async function populateTheDb(req, res) {
     var scrapper = new Scrapper(req.params.url)
+console.log("######## populating with link "+req.params.url)
+    return await scrapper.getQuestions().then(results => {
+        var cleanResults=[]
+        for (var j in results) {
+            if (results[j].title) { 
 
-    return await scrapper.getQuestions().then(result => {
+                results[j].identifier =  "#"+req.params.url + "-" + results[j].title.replace(/\ /g,"")
 
-        questionModel.collection.insertMany(result, (err, result) => {
+                cleanResults.push(results[j])
+            }
+
+        }
+
+        questionModel.collection.insertMany(cleanResults, (err, result) => {
 
             if (err)
                 return res.send(err)
@@ -112,15 +123,18 @@ app.get("/populate/:pin", (req, res) => {
 
 async function populateFullDb() {
     for (var i in examLinks) {
-        var scrapper = new Scrapper(examLinks[i])
+        try {
+             var scrapper = new Scrapper(examLinks[i])
         console.log("############# " + i + " of " + examLinks.length + " ################")
 
-        await scrapper.getQuestions().then(result => {
-            console.log("---> Questions retrieved: " + result.length)
+        await scrapper.getQuestions().then(results => {
+            console.log("---> Questions retrieved: " + results.length)
             var cleanResults = []
             for (var j in results) {
-                if (results[j].title) {
-                    results[j].identifier = examLinks[i] + "-" + results[j].title.replace(" ", "")
+                if (results[j].title) { 
+
+                    results[j].identifier = "#"+examLinks[i] + "-" + results[j].title.replace(/\ /g,"")
+
                     cleanResults.push(results[j])
                 }
 
@@ -135,6 +149,10 @@ async function populateFullDb() {
 
             })
         })
+        } catch (error) {
+            console.log("EXIT ERROR *** "+examLinks[i])
+        } 
+       
     }
 
     lockPop = false
