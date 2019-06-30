@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
 
 const questionSchema = new Schema({
     title: String,
+    identifier:{type:String,unique:true},
     solution: {
         choices: [
             {

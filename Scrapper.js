@@ -7,10 +7,24 @@ class Scrapper {
     constructor(URL) {
         this.pageUrl = URL
 
+        this.titleSelectors =[
+            "h3",
+            'div[class="ai-stem"]>strong', 'strong'
+      ]
+          this.questionsSelectors =[
+            'ol[class="wpProQuiz_list"] > li',
+            "div.entry-content > ol > li",
+            "#post-1411 > div.entry-content > p:nth-child(1) > strong:nth-child(2)"
 
+          ]
+          this.choicesSelectors =[
+              'li[class="wpProQuiz_questionListItem"]',
+              'ul > li' 
+          ]
     }
 
 
+     
 
     async getQuestions() {
 
@@ -23,17 +37,25 @@ class Scrapper {
 
         const $ = cheerio.load(pageStr)
 
-        var questions = []
-
-        //loops through the questions list  
-console.log("count: ",  $("div.entry-content > ol > li").length)
-        $("div.entry-content > ol > li").each((questionIndex, questionEl) => {
+        var questions = [] 
+ 
+        //loops through the questions list   
+    var questionsEl= this.getElement($,this.questionsSelectors,$("body"))
+    if(questionsEl)
+       questionsEl.each((questionIndex, questionEl) => {
             var question = {}
 
-            var title = this.getTitle($, questionEl)
+            try {
+                 
+                var titleEl =  this.getElement($,this.titleSelectors, questionEl)
+                if(titleEl)
+            var title = titleEl.text()
+            } catch (error) {
+                console.log(error)
+            }
 
             question.title = this.prettifyString(title)
-            question.solution = this.getSolution($, questionIndex)
+            question.solution = this.getSolution($, questionEl)
 
             question.exam = $("div.entry-content > h2").text()
             question.version = ""
@@ -58,15 +80,18 @@ console.log("count: ",  $("div.entry-content > ol > li").length)
 
         })
     }
-    getSolution($, questionIndex) {
+    getSolution($, questionEl) {
 
         var solution = { choices: [] }
-        $("div.entry-content > ol > li:nth-child(" + (questionIndex + 1) + ") > ul > li").each((choiceIndex, choiceEl) => {
+        
+        var choicesEl=this.getElement($,this.choicesSelectors,questionEl)
+        if(choicesEl)
+        choicesEl.each((choiceIndex, choiceEl) => {
             var choice = {}
             var cleanChoice = ""
-            try { 
+            try {
                 cleanChoice = this.prettifyString($(choiceEl).text())
-              var  expl=$('div[class="itemfeedback"]',choiceEl).text()
+                var expl = $('div[class="itemfeedback"]', choiceEl).text()
                 if (expl)
                     solution.explanation = this.prettifyString()
 
@@ -77,7 +102,7 @@ console.log("count: ",  $("div.entry-content > ol > li").length)
 
 
             choice.name = cleanChoice
-            if ($('span[style*="color"]',choiceEl).text()) {
+            if ($('span[style*="color"]', choiceEl).text()) {
 
                 choice.isAnswer = true
                 solution.choices.push(choice)
@@ -110,26 +135,32 @@ console.log("count: ",  $("div.entry-content > ol > li").length)
     }
 
 
-    getTitle($, questionEl) {
+  
 
-        var selectors = [
-            "h3", 
-            'div[class="ai-stem"]>strong','strong'
-        ]
-        var title = ""
-        selectors.forEach((selector) => {
-            title = $(selector, questionEl).text() 
-            if (title)
-                return
+    getElement($,selectors,root) {  
+        var element=null
+        for (var i = 0; i < selectors.length; i++) {
+            element=$(selectors[i],root)
 
-        })
+            
+            if (element&&element.length>0){ 
+                 
+                  return element
+                   
+                   
+            }
+              
 
-        return title;
+        }  
 
-    }
- 
+        if(element)
+        console.log("FATAL ERROR _______________",this.pageUrl, selectors,"_______________________")
+        return false
+    } 
 
 }
+
+
 
 
 
