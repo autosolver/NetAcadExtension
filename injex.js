@@ -1,7 +1,4 @@
 (async function () {
-
-
-
     miniDb = []
     let rootURL = 'https://ccna.aimuhire.com'
     let query = ""
@@ -37,7 +34,6 @@
 
 
         // console.log("old: ",oldQuery,"new: ",query)
-        console.log("requesting ....")
 
         getSolution(rootURL + '/q/' + encodeURIComponent(query), (err, result) => {
 
@@ -178,11 +174,13 @@
 
     function checkChoice(choice) {
         let options = document.querySelectorAll('div[class="question"] label')
-
+        //if choice.name ends with asteriks remove it.
+        let correctChoice = choice.name
+        if (correctChoice.endsWith("*"))
+            correctChoice = correctChoice.substring(0, correctChoice.length - 1)
         for (let i in options) {
-            if (options[i].innerText == choice.name)
+            if (options[i].innerText == correctChoice)
                 document.querySelectorAll('div[class="question"] input')[i].checked = true
-
         }
 
     }
@@ -244,13 +242,11 @@
             let isPowerOn = await getStorageValue("IS_POWER_ON")
             let isSelectOn = await getStorageValue("IS_SELECT_ON")
 
-            console.log("is power on", isPowerOn)
-            console.log("is select on", isSelectOn)
             if (!isPowerOn || !isSelectOn) {
                 clearInterval(intervalID)
-            } 
+            }
             if (!isPowerOn) {
-            return removeElementsFromView()
+                return removeElementsFromView()
             }
 
 
@@ -265,11 +261,8 @@
 
             }
 
-
+            console.clear()
             console.log("(((((((NETACAD AUTO SOLVER EXTENSION RUNNING)))))))")
-
-
-
 
         }, 1000)
 
@@ -278,7 +271,6 @@
 
 
     function removeElementsFromView() {
-        console.log("clearing elements")
         let answerEl = window.document.getElementById("answer")
         if (answerEl)
             answerEl.hidden = true
@@ -291,13 +283,9 @@
         return new Promise((resolve, reject) => {
             chrome.storage.sync.get([key], function (result) {
                 resolve(result[key])
-                console.log("got ", result[key])
             });
         })
 
 
     }
-
-
-    console.log("(((((((NETACAD AUTO SOLVER EXTENSION LOADED)))))))")
 })()
