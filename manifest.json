@@ -1,6 +1,6 @@
 {
     "name": "NetAcad Assessment AutoSolver",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "This extension once enabled solves automatically most Cisco Networking Academy™ questions giving you explanation along the way.",
     "permissions": ["activeTab","storage","declarativeContent"],
     "content_scripts": [

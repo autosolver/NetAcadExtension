@@ -27,7 +27,6 @@
         isSelectOn = true
     }
 
-
     power.addEventListener("click", async function (event) { 
         isPowerOn = await getStorageValue("IS_POWER_ON").then(result => result) 
         power.innerText = isPowerOn ? "Stopping..." : "Starting..."
@@ -86,7 +85,8 @@ color:red;
 border: red 2px solid;
 display: block;
 font-size: 1.1em;
-background-color:white; `
+background-color:white; 
+box-shadow: 1px 1px 8px 0px rgba(0,0,0,0.75);`
         else
             power.style = `
 border-radius: 20px;
@@ -94,10 +94,11 @@ padding:10px;
 width:200px;
 outline: none; 
 color:green;
-border: green 2px solid;
+border: green 1px solid;
 display: block;
 font-size: 1.1em;
-background-color:white; `
+background-color:white; 
+box-shadow: 1px 1px 8px 0px rgba(0,0,0,0.75);`
 
 
     }
@@ -110,10 +111,11 @@ width:200px;
 padding:10px;
 outline: none; 
 color:#42003f;
-border: #42003f 2px solid;
+border: #42003f 1px solid;
 display: block;
 font-size: 1.1em;
-background-color:white; `
+background-color:white; 
+box-shadow: 1px 1px 8px 0px rgba(0,0,0,0.75);`
         else
             select.style = ` 
 border-radius: 20px;
@@ -121,10 +123,11 @@ padding:10px;
 width:200px;
 outline: none; 
 color:green;
-border: green 2px solid;
+border: green 1px solid;
 display: block;
 font-size: 1.1em;
-background-color:white; `
+background-color:white;
+box-shadow: 1px 1px 8px 0px rgba(0,0,0,0.75);`
 
 
     }
