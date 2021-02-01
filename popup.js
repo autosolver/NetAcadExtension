@@ -141,7 +141,6 @@ box-shadow: 1px 1px 8px 0px rgba(0,0,0,0.75);
 
   function getStorageValue(key) {
     return new Promise((resolve, reject) => {
-      if (!chrome.storage) return alert("chrome storage not available");
       chrome.storage?.sync.get([key], function (result) {
         resolve(result[key]);
       });
