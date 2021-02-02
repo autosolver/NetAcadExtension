@@ -119,7 +119,7 @@ class NetAcadExtension {
 
   createHelp() {
     let helpDiv = document.createElement("div");
-    let search_query = encodeURIComponent(`"${this.query}" CCNA answer`);
+    let search_query = encodeURIComponent(`"${this.previousQuery}" CCNA answer`);
     helpDiv.id = "help";
     let helpText = document.createElement("div");
     helpText.id = "helpText";
